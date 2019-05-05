@@ -2,6 +2,9 @@
 
 ESPHome configuration to drive LC-Technology relay modules. 
 Tested on a 12V 4 channel version with nuvoton MCU.
+See detailed writeup of this project in my blog:  
+
+https://ncrmnt.org/?p=3333
 
 
 ## Running & flashing
