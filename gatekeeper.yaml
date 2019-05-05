@@ -1,0 +1,105 @@
+substitutions:
+  devicename: "gatekeeper"
+
+wifi:
+  networks:
+  - ssid: changeme
+    password: secret
+
+ota:
+  safe_mode: True
+  password: updateme
+
+esphome:
+  name: $devicename
+  platform: ESP8266
+  board: esp01_1m
+  build_path: build/gatecontrol
+  includes:
+    - lcrelay.h
+
+api:
+
+web_server:
+  port: 80
+
+time:
+- platform: homeassistant
+
+uart:
+  id: uart
+  baud_rate: 115200
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+
+switch:
+- platform: custom
+  lambda: |-
+    auto r1 = new LCRelay(id(uart), 1);
+    auto r2 = new LCRelay(id(uart), 2);
+    auto r3 = new LCRelay(id(uart), 3);
+    auto r4 = new LCRelay(id(uart), 4);        
+    App.register_component(r1);
+    App.register_component(r2);
+    App.register_component(r3);
+    App.register_component(r4);        
+    return {r1, r2, r3, r4};
+  switches:
+    - name: "${devicename} Relay 1"
+      id: relay1
+      internal: true
+    - name: "${devicename} Relay 2"
+      id: relay2
+      internal: true
+    - name: "${devicename} Relay 3"       
+      id: relay3
+      internal: true
+    - name: "${devicename} IceShard Power"
+      id: relay4
+      icon: mdi:speaker-bluetooth
+
+- platform: template
+  name: "${devicename} Main Gates"
+  icon: mdi:gate
+  lambda: |-
+      if (id(relay1).state) {
+        return true;
+      } else {
+        return false;
+      }
+  turn_on_action:
+    - switch.turn_on: relay1
+    - delay: 1s
+    - switch.turn_off: relay1
+  turn_off_action:
+    switch.turn_off: relay1
+- platform: template
+  name: "${devicename} Secondary Gates"
+  icon: mdi:gate
+  lambda: |-
+      if (id(relay2).state) {
+        return true;
+      } else {
+        return false;
+      }
+  turn_on_action:
+    - switch.turn_on: relay2
+    - delay: 1s
+    - switch.turn_off: relay2
+  turn_off_action:
+    switch.turn_off: relay2
+- platform: template    
+  name: "${devicename} Garage Door"
+  icon: mdi:door-closed
+  lambda: |-
+      if (id(relay3).state) {
+        return true;
+      } else {
+        return false;
+      }
+  turn_on_action:
+    - switch.turn_on: relay3
+    - delay: 1s
+    - switch.turn_off: relay3
+  turn_off_action:
+    switch.turn_off: relay3

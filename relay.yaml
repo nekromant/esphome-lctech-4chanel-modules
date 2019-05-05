@@ -1,0 +1,55 @@
+substitutions:
+  devicename: "relay"
+
+wifi:
+  power_save_mode: LIGHT
+  - ssid: changeme 
+    password: secret    
+
+ota:
+  safe_mode: True
+  password: updateme
+
+esphome:
+  name: $devicename
+  platform: ESP8266
+  board: esp01_1m
+  build_path: build/gatecontrol
+  includes:
+    - lcrelay.h
+
+api:
+
+web_server:
+  port: 80
+
+time:
+- platform: homeassistant
+
+uart:
+  id: uart
+  baud_rate: 115200
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+
+switch:
+- platform: custom
+  lambda: |-
+    auto r1 = new LCRelay(id(uart), 1);
+    auto r2 = new LCRelay(id(uart), 2);
+    auto r3 = new LCRelay(id(uart), 3);
+    auto r4 = new LCRelay(id(uart), 4);        
+    App.register_component(r1);
+    App.register_component(r2);
+    App.register_component(r3);
+    App.register_component(r4);        
+    return {r1, r2, r3, r4};
+  switches:
+    - name: "${devicename} Relay 1"
+      id: relay1
+    - name: "${devicename} Relay 2"
+      id: relay2
+    - name: "${devicename} Relay 3"       
+      id: relay3
+    - name: "${devicename} Relay 4"
+      id: relay4
