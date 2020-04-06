@@ -3,8 +3,12 @@ substitutions:
 
 wifi:
   networks:
-  - ssid: changeme
-    password: secret
+  - ssid: frostgate
+    password: neverland2
+
+logger:
+  level: DEBUG
+  baud_rate: 0
 
 ota:
   safe_mode: True
@@ -103,3 +107,24 @@ switch:
     - switch.turn_off: relay3
   turn_off_action:
     switch.turn_off: relay3
+
+- platform: remote_transmitter
+  name: "Top Lamp: Leds"
+  rc_switch_raw:
+    code: '110101000101110011000000'
+    protocol: 1
+
+
+remote_transmitter:
+  pin: GPIO2
+  # RF uses a 100% carrier signal
+  carrier_duty_percent: 100%
+
+remote_receiver:
+  pin: GPIO0
+  dump: 
+    - rc_switch
+  tolerance: 50%
+  filter: 100us
+  idle: 2ms
+  buffer_size: 2kb

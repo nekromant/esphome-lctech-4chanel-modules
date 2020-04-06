@@ -18,30 +18,40 @@ using namespace esphome;
  - Third  byte, state 0/1 
  - Forth  byte, the sum of three previous bytes
 
+  Alternative firmware also add RGB float outputs and button states
+
 */
 
 class LCRelay : public Component, public UARTDevice, public switch_::Switch {
 
  public:
-    int relayId;
-    LCRelay(UARTComponent *parent, int relay): UARTDevice(parent) {
-        relayId = relay;
+    int ctlId;
+    LCRelay(UARTComponent *parent, int control_id): UARTDevice(parent) {
+        ctlId = control_id;
     }
 
   void setup() override {
-
+    /* Make sure we're synchronized initially and all relays are off */
+    int j; 
+    for (j=0; j<3; j++) {
+        this->write_state(false);
+    }
   }
 
-  void write_state(bool state) override {
+  static void send_packet(UARTDevice *dev, uint8_t id, uint8_t state)
+  {
     uint8_t msg[4];
     msg[0] = 0xA0;
-    msg[1] = relayId;
+    msg[1] = id;
     msg[2] = state;
     msg[3] = msg[0] + msg[1] + msg[2];
     /* There are no ack/nack packets. 
        Let's send the payload twice to be sure */
-    this->write_array(msg, sizeof(msg));
-    this->write_array(msg, sizeof(msg));
-    publish_state(state);    
+    dev->write_array(msg, sizeof(msg));
+  }
+
+  void write_state(bool state) override {
+    this->send_packet(this, ctlId, !state);
+    this->publish_state(state);    
   }
 };

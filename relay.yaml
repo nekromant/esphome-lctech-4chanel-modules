@@ -1,10 +1,9 @@
 substitutions:
-  devicename: "relay"
+  devicename: "lcrelay"
 
 wifi:
-  power_save_mode: LIGHT
-  - ssid: changeme 
-    password: secret    
+  ssid: XXXXXX
+  password: XXXXXXXXXX    
 
 ota:
   safe_mode: True
@@ -17,8 +16,13 @@ esphome:
   build_path: build/gatecontrol
   includes:
     - lcrelay.h
+    - lccomponent.h
 
 api:
+
+logger:
+  level: DEBUG
+  baud_rate: 0
 
 web_server:
   port: 80
@@ -28,9 +32,24 @@ time:
 
 uart:
   id: uart
-  baud_rate: 115200
+  baud_rate: 19200
   tx_pin: GPIO1
   rx_pin: GPIO3
+
+sensor:
+  - platform: wifi_signal
+    name: "${devicename}: WiFi Signal"
+    update_interval: 60s
+
+binary_sensor:
+  - platform: custom
+    lambda: |-
+      auto b = new LCButtons(id(uart), 500);
+      App.register_component(b);
+      return {&b->buttons[0], &b->buttons[1]};
+    binary_sensors:
+      - name: "${devicename}: Button 0"
+      - name: "${devicename}: Button 1"
 
 switch:
 - platform: custom
@@ -45,11 +64,37 @@ switch:
     App.register_component(r4);        
     return {r1, r2, r3, r4};
   switches:
-    - name: "${devicename} Relay 1"
+    - name: "${devicename}: Relay 1"
       id: relay1
-    - name: "${devicename} Relay 2"
+    - name: "${devicename}: Relay 2"
       id: relay2
-    - name: "${devicename} Relay 3"       
+    - name: "${devicename}: Relay 3"       
       id: relay3
-    - name: "${devicename} Relay 4"
+    - name: "${devicename}: Relay 4"
       id: relay4
+
+light:
+  - platform: rgb
+    name: "${devicename}: RGB LED"
+    red: red
+    green: green
+    blue: blue
+
+
+output:
+- platform: custom
+  type: float
+  lambda: |-
+    auto stcR = new LCFloatOutput(id(uart), 0x11);
+    App.register_component(stcR);
+    auto stcG = new LCFloatOutput(id(uart), 0x12);
+    App.register_component(stcG);
+    auto stcB = new LCFloatOutput(id(uart), 0x13);
+    App.register_component(stcB);
+    return {stcR, stcG, stcB};
+
+  outputs:
+    - id: red
+    - id: green
+    - id: blue
+
