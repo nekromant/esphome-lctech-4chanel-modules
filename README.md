@@ -21,9 +21,20 @@ This repository contains 2 sample configs
 
 A config I used to drive Nice Flor-S remote control buttons. 
 
-- relay.yaml
+- relay-simple.yaml
 
 A config that just exposes all relays for your fun. 
+
+- relay.yaml
+
+Same as the above, but with LEDs and buttons. Needs alternative nuvoton firmware
+
+## nuvoton firmware. 
+
+Stock firmware only supports relay control. I've also created an alternative 
+firmware for nuvoton MCU that exposes three LEDs with PWM (RGB) and 
+reports button states. You'll need nuvoton's ISP and a Windows box (or a VM) to flash it.
+I used linux to develop the firmware and a windows box to flash it.
 
 ## Legal stuff
 
