@@ -36,6 +36,8 @@ firmware for nuvoton MCU that exposes three LEDs with PWM (RGB) and
 reports button states. You'll need nuvoton's ISP and a Windows box (or a VM) to flash it.
 I used linux to develop the firmware and a windows box to flash it.
 
+Just grab the firmware.hex from here: https://github.com/nekromant/lctech-relay-altfw
+
 ## Legal stuff
 
 Copyright © 2019 Andrew 'Necromant' Andrianov <spam@ncrmnt.org>
