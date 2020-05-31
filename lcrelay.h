@@ -32,6 +32,7 @@ class LCRelay : public Component, public UARTDevice, public switch_::Switch {
 
   void setup() override {
     /* Make sure we're synchronized initially and all relays are off */
+    delay(300);
     int j; 
     for (j=0; j<3; j++) {
         this->write_state(false);

@@ -40,9 +40,6 @@ class LCButtons: public UARTDevice, public PollingComponent {
 };
 
 
-#include "esphome.h"
-using namespace esphome;
-
 class LCFloatOutput : public Component, public UARTDevice, public output::FloatOutput {
  public:
   char pre;
@@ -60,5 +57,39 @@ class LCFloatOutput : public Component, public UARTDevice, public output::FloatO
   void write_state(float state) override {
     unsigned int v = (state * 255.0);
     LCRelay::send_packet(this, pre, v);
+  }
+};
+
+
+class LCFanOutput : public Component, public UARTDevice, public output::FloatOutput {
+ public:
+  char fanlo, fanhi;
+  static bool running;
+  
+  #define DIV_ROUND_DOWN(n, d)  (((n) / (d)) * (d))
+  LCFanOutput(UARTComponent *parent, const char lo, const char hi)
+    :UARTDevice(parent)
+  {
+    fanlo = lo; 
+    fanhi = hi;
+  }
+
+  void setup() override {
+  }
+
+  void write_state(float state) override {
+    if (state == 0.0) {
+        LCRelay::send_packet(this, fanlo, 1);
+        LCRelay::send_packet(this, fanhi, 1);
+    } else if (state <= 0.34) {
+        LCRelay::send_packet(this, fanlo, 0);
+        LCRelay::send_packet(this, fanhi, 1);
+    } else if (state <= 0.67) {
+        LCRelay::send_packet(this, fanlo, 1);
+        LCRelay::send_packet(this, fanhi, 0);
+    } else {
+        LCRelay::send_packet(this, fanlo, 0);
+        LCRelay::send_packet(this, fanhi, 0);
+    }
   }
 };
