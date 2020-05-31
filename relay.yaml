@@ -31,7 +31,7 @@ time:
 - platform: homeassistant
 
 uart:
-  id: uart
+  id: uart0
   baud_rate: 19200
   tx_pin: GPIO1
   rx_pin: GPIO3
@@ -44,7 +44,7 @@ sensor:
 binary_sensor:
   - platform: custom
     lambda: |-
-      auto b = new LCButtons(id(uart), 500);
+      auto b = new LCButtons(id(uart0), 500);
       App.register_component(b);
       return {&b->buttons[0], &b->buttons[1]};
     binary_sensors:
@@ -54,10 +54,10 @@ binary_sensor:
 switch:
 - platform: custom
   lambda: |-
-    auto r1 = new LCRelay(id(uart), 1);
-    auto r2 = new LCRelay(id(uart), 2);
-    auto r3 = new LCRelay(id(uart), 3);
-    auto r4 = new LCRelay(id(uart), 4);        
+    auto r1 = new LCRelay(id(uart0), 1);
+    auto r2 = new LCRelay(id(uart0), 2);
+    auto r3 = new LCRelay(id(uart0), 3);
+    auto r4 = new LCRelay(id(uart0), 4);        
     App.register_component(r1);
     App.register_component(r2);
     App.register_component(r3);
@@ -85,11 +85,11 @@ output:
 - platform: custom
   type: float
   lambda: |-
-    auto stcR = new LCFloatOutput(id(uart), 0x11);
+    auto stcR = new LCFloatOutput(id(uart0), 0x11);
     App.register_component(stcR);
-    auto stcG = new LCFloatOutput(id(uart), 0x12);
+    auto stcG = new LCFloatOutput(id(uart0), 0x12);
     App.register_component(stcG);
-    auto stcB = new LCFloatOutput(id(uart), 0x13);
+    auto stcB = new LCFloatOutput(id(uart0), 0x13);
     App.register_component(stcB);
     return {stcR, stcG, stcB};
 

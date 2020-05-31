@@ -31,7 +31,7 @@ time:
 - platform: homeassistant
 
 uart:
-  id: uart
+  id: uart0
   baud_rate: 19200
   tx_pin: GPIO1
   rx_pin: GPIO3
@@ -44,10 +44,10 @@ sensor:
 switch:
 - platform: custom
   lambda: |-
-    auto r1 = new LCRelay(id(uart), 1);
-    auto r2 = new LCRelay(id(uart), 2);
-    auto r3 = new LCRelay(id(uart), 3);
-    auto r4 = new LCRelay(id(uart), 4);        
+    auto r1 = new LCRelay(id(uart0), 1);
+    auto r2 = new LCRelay(id(uart0), 2);
+    auto r3 = new LCRelay(id(uart0), 3);
+    auto r4 = new LCRelay(id(uart0), 4);        
     App.register_component(r1);
     App.register_component(r2);
     App.register_component(r3);
